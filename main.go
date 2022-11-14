@@ -47,6 +47,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	filetype := http.DetectContentType(buff)
 	if filetype != "image/png" && filetype != "image/jpeg" {
 		http.Error(w, "The provided file format is not allowed. Please upload a JPEG or PNG image", http.StatusBadRequest)
+		return
 	}
 
 	_, err = file.Seek(0, io.SeekStart)
