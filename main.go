@@ -37,6 +37,24 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
+	buff := make([]byte, 512)
+	_, err = file.Read(buff)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	filetype := http.DetectContentType(buff)
+	if filetype != "image/png" && filetype != "image/jpeg" {
+		http.Error(w, "The provided file format is not allowed. Please upload a JPEG or PNG image", http.StatusBadRequest)
+	}
+
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	err = os.MkdirAll("./uploads", os.ModePerm)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
